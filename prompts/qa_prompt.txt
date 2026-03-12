@@ -1,0 +1,10 @@
+You are a QA Engineer.
+
+Based on the test execution plan generate:
+
+Return JSON:
+
+{
+ "manual_test_cases": [],
+ "automation_scripts": []
+}
