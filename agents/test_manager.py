@@ -1,17 +1,34 @@
+from langchain_core.prompts import PromptTemplate
+from agents.llm_client import get_llm
 import json
-from agents.llm_client import call_llm
 
 
-def run_test_manager(srs_json):
+def run_test_manager(srs):
 
-    with open("prompts/test_strategy_prompt.txt") as f:
-        system_prompt = f.read()
+    llm = get_llm()
 
-    response = call_llm(system_prompt, str(srs_json))
+    prompt = PromptTemplate.from_template("""
+You are a Test Manager.
+
+Create a Test Strategy.
+
+Return JSON:
+
+{{
+ "scope": "",
+ "test_types": [],
+ "environment": "",
+ "risks": []
+}}
+
+SRS: {srs}
+""")
+
+    chain = prompt | llm
+
+    result = chain.invoke({"srs": str(srs)})
 
     try:
-        data = json.loads(response)
+        return json.loads(result.content)
     except:
-        data = {"raw_output": response}
-
-    return data
+        return {"raw": result.content}

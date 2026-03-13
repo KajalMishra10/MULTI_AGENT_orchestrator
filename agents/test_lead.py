@@ -1,29 +1,33 @@
-from agents.llm_client import call_llm
+from langchain_core.prompts import PromptTemplate
+from agents.llm_client import get_llm
+import json
 
 
 def run_test_lead(strategy):
-    """
-    Test Lead agent
-    
-    Input:
-        Test Strategy
-    
-    Output:
-        System Test Execution Plan
-    """
 
-    system_prompt = """
+    llm = get_llm()
+
+    prompt = PromptTemplate.from_template("""
 You are a Test Lead.
 
-Based on the test strategy generate a System Test Execution Plan.
+Generate System Test Execution Plan.
 
-Include:
+Return JSON:
 
-- Test Phases
-- Execution Timeline
-- Resource Allocation
-"""
+{{
+ "test_phases": [],
+ "timeline": "",
+ "resources": []
+}}
 
-    result = call_llm(system_prompt, strategy)
+Strategy: {strategy}
+""")
 
-    return result
+    chain = prompt | llm
+
+    result = chain.invoke({"strategy": str(strategy)})
+
+    try:
+        return json.loads(result.content)
+    except:
+        return {"raw": result.content}

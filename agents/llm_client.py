@@ -1,18 +1,13 @@
-import os
+from langchain_groq import ChatGroq
 from dotenv import load_dotenv
-from groq import Groq
+import os
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+def get_llm():
 
-
-def call_llm(system_prompt, user_message):
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message},
-        ],
+    return ChatGroq(
+        model="llama-3.3-70b-versatile",
+        api_key=os.getenv("GROQ_API_KEY"),
+        temperature=0
     )
-    return response.choices[0].message.content

@@ -3,29 +3,27 @@ from agents.llm_client import get_llm
 import json
 
 
-def run_pm_agent(requirement):
+def run_automation_qa(plan):
 
     llm = get_llm()
 
     prompt = PromptTemplate.from_template("""
-You are a Product Manager.
+You are an Automation QA Engineer.
 
-Create an SRS.
+Generate Selenium automation scripts.
 
 Return JSON:
 
 {{
- "product_overview": "",
- "target_users": [],
- "features": []
+ "automation_scripts": []
 }}
 
-Idea: {idea}
+Plan: {plan}
 """)
 
     chain = prompt | llm
 
-    result = chain.invoke({"idea": requirement})
+    result = chain.invoke({"plan": str(plan)})
 
     try:
         return json.loads(result.content)

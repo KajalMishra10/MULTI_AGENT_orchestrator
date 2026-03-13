@@ -1,20 +1,19 @@
-from orchestrator.workflow import run_workflow
+from orchestrator.workflow import build_graph
 
 
 def main():
 
-    requirement = input("Enter Product Idea: ")
+    idea = input("Enter Product Idea: ")
 
-    result = run_workflow(requirement)
+    graph = build_graph()
 
-    print("\n\nFINAL RESULT\n")
+    result = graph.invoke({"idea": idea})
 
-    for key, value in result.items():
+    print("\nFINAL OUTPUT\n")
 
-        print("\n====================")
-        print(key)
-        print("====================")
-        print(value)
+    for k, v in result.items():
+        print("\n", k)
+        print(v)
 
 
 if __name__ == "__main__":

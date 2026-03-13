@@ -3,31 +3,30 @@ from agents.llm_client import get_llm
 import json
 
 
-def run_pm_agent(requirement):
+def run_manual_qa(plan):
 
     llm = get_llm()
 
     prompt = PromptTemplate.from_template("""
-You are a Product Manager.
+You are a Manual QA Engineer.
 
-Create an SRS.
+Generate manual test cases.
 
 Return JSON:
 
 {{
- "product_overview": "",
- "target_users": [],
- "features": []
+ "manual_tests": []
 }}
 
-Idea: {idea}
+Plan: {plan}
 """)
 
     chain = prompt | llm
 
-    result = chain.invoke({"idea": requirement})
+    result = chain.invoke({"plan": str(plan)})
 
     try:
         return json.loads(result.content)
     except:
         return {"raw": result.content}
+    
