@@ -6,6 +6,7 @@ from agents.test_manager import run_test_manager
 from agents.test_lead import run_test_lead
 from agents.manual_qa import run_manual_qa
 from agents.automation_qa import run_automation_qa
+from rag.retriever import get_retriever
 
 
 # STATE SCHEMA
@@ -27,7 +28,20 @@ def pm_node(state: AgentState):
 
 
 def tm_node(state: AgentState):
-    strategy = run_test_manager(state["srs"])
+    retriever = get_retriever()
+
+    docs = retriever.invoke(str(state["srs"]))
+
+    context = "\n".join([d.page_content for d in docs])
+
+    strategy = run_test_manager(
+       f"""
+       Use these testing guidelines:
+
+       {context}
+       Create testing strategy for this SRS:
+       {state["srs"]}
+    """)
     return {"strategy": strategy}
 
 

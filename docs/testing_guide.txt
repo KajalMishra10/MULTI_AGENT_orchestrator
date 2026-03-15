@@ -1,0 +1,3 @@
+Risk-based testing focuses on high-risk areas first.
+Regression testing ensures new changes do not break existing features.
+Test automation should prioritize repetitive test cases.
