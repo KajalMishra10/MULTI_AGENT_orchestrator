@@ -7,6 +7,7 @@ from agents.test_lead import run_test_lead
 from agents.manual_qa import run_manual_qa
 from agents.automation_qa import run_automation_qa
 from rag.retriever import get_retriever
+from utils.save_output import save_agent_output
 
 
 # STATE SCHEMA
@@ -17,6 +18,7 @@ class AgentState(TypedDict, total=False):
     plan: dict
     manual_tests: dict
     automation_tests: dict
+    run_dir: str
 
 
 # NODES
@@ -24,6 +26,7 @@ class AgentState(TypedDict, total=False):
 def pm_node(state: AgentState):
     idea = state["idea"]
     srs = run_pm_agent(idea)
+    save_agent_output(state["run_dir"], "1_srs", srs)
     return {"srs": srs}
 
 
@@ -42,21 +45,25 @@ def tm_node(state: AgentState):
        Create testing strategy for this SRS:
        {state["srs"]}
     """)
+    save_agent_output(state["run_dir"], "2_test_strategy", strategy)
     return {"strategy": strategy}
 
 
 def tl_node(state: AgentState):
     plan = run_test_lead(state["strategy"])
+    save_agent_output(state["run_dir"], "3_execution_plan", plan)
     return {"plan": plan}
 
 
 def manual_node(state: AgentState):
     tests = run_manual_qa(state["plan"])
+    save_agent_output(state["run_dir"], "4_manual_tests", tests)
     return {"manual_tests": tests}
 
 
 def automation_node(state: AgentState):
     scripts = run_automation_qa(state["plan"])
+    save_agent_output(state["run_dir"], "5_automation_tests", scripts)
     return {"automation_tests": scripts}
 
 
