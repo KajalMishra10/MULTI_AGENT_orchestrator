@@ -1,6 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 from agents.llm_client import get_llm
-import json
+from utils.parse_and_validate import parse_and_validate
+from models.schemas import ManualTests
 
 
 def run_manual_qa(plan):
@@ -12,10 +13,17 @@ You are a Manual QA Engineer.
 
 Generate manual test cases.
 
-Return JSON:
+Return ONLY valid JSON (no extra text):
 
 {{
- "manual_tests": []
+ "manual_tests": [
+   {{
+     "test_id": "",
+     "title": "",
+     "steps": [],
+     "expected_result": ""
+   }}
+ ]
 }}
 
 Plan: {plan}
@@ -25,8 +33,4 @@ Plan: {plan}
 
     result = chain.invoke({"plan": str(plan)})
 
-    try:
-        return json.loads(result.content)
-    except:
-        return {"raw": result.content}
-    
+    return parse_and_validate(result.content, ManualTests)

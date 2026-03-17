@@ -1,6 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 from agents.llm_client import get_llm
-import json
+from utils.parse_and_validate import parse_and_validate
+from models.schemas import TestStrategy
 
 
 def run_test_manager(srs):
@@ -12,7 +13,7 @@ You are a Test Manager.
 
 Create a Test Strategy.
 
-Return JSON:
+Return ONLY valid JSON (no extra text):
 
 {{
  "scope": "",
@@ -28,7 +29,4 @@ SRS: {srs}
 
     result = chain.invoke({"srs": str(srs)})
 
-    try:
-        return json.loads(result.content)
-    except:
-        return {"raw": result.content}
+    return parse_and_validate(result.content, TestStrategy)

@@ -1,6 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 from agents.llm_client import get_llm
-import json
+from utils.parse_and_validate import parse_and_validate
+from models.schemas import SRS
 
 
 def run_pm_agent(requirement):
@@ -12,7 +13,7 @@ You are a Product Manager.
 
 Create an SRS.
 
-Return JSON:
+Return ONLY valid JSON (no extra text):
 
 {{
  "product_overview": "",
@@ -27,7 +28,4 @@ Idea: {idea}
 
     result = chain.invoke({"idea": requirement})
 
-    try:
-        return json.loads(result.content)
-    except:
-        return {"raw": result.content}
+    return parse_and_validate(result.content, SRS)

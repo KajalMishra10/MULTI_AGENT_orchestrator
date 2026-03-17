@@ -1,6 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 from agents.llm_client import get_llm
-import json
+from utils.parse_and_validate import parse_and_validate
+from models.schemas import ExecutionPlan
 
 
 def run_test_lead(strategy):
@@ -12,7 +13,7 @@ You are a Test Lead.
 
 Generate System Test Execution Plan.
 
-Return JSON:
+Return ONLY valid JSON (no extra text):
 
 {{
  "test_phases": [],
@@ -27,7 +28,4 @@ Strategy: {strategy}
 
     result = chain.invoke({"strategy": str(strategy)})
 
-    try:
-        return json.loads(result.content)
-    except:
-        return {"raw": result.content}
+    return parse_and_validate(result.content, ExecutionPlan)
