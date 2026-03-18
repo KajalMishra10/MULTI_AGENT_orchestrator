@@ -1,5 +1,5 @@
 from langchain_core.prompts import PromptTemplate
-from agents.llm_client import get_llm
+from agents.llm_client import get_llm, call_llm_with_retry
 from utils.parse_and_validate import parse_and_validate
 from models.schemas import ExecutionPlan
 
@@ -26,6 +26,6 @@ Strategy: {strategy}
 
     chain = prompt | llm
 
-    result = chain.invoke({"strategy": str(strategy)})
+    content = call_llm_with_retry(chain, {"strategy": str(strategy)})
 
-    return parse_and_validate(result.content, ExecutionPlan)
+    return parse_and_validate(content, ExecutionPlan)

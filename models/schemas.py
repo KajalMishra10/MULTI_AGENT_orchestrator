@@ -1,6 +1,13 @@
 from pydantic import BaseModel, Field
 
 
+# Reviewer Output
+class ReviewResult(BaseModel):
+    approved: bool
+    score: int
+    feedback: str = ""
+
+
 # PM Agent Output
 class SRS(BaseModel):
     product_overview: str

@@ -1,5 +1,11 @@
+import logging
 from orchestrator.workflow import build_graph
 from utils.save_output import get_run_dir, save_full_output
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 
 
 def main():
@@ -11,7 +17,15 @@ def main():
 
     graph = build_graph()
 
-    result = graph.invoke({"idea": idea, "run_dir": run_dir})
+    try:
+        result = graph.invoke({"idea": idea, "run_dir": run_dir})
+    except RuntimeError as e:
+        print(f"\n[FAILED] Pipeline failed: {e}")
+        print("Check your GROQ_API_KEY and network connection.")
+        return
+    except KeyboardInterrupt:
+        print("\n[STOPPED] Pipeline cancelled by user.")
+        return
 
     save_full_output(run_dir, {k: v for k, v in result.items() if k != "run_dir"})
 
